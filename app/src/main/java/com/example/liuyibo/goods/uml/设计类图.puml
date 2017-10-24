@@ -1,0 +1,37 @@
+@startuml
+package "android"{
+   class Config
+   interface MyRetrofit
+   interface DbUtil
+   class MainActivity{
+        SearchView searchview;
+        JPushListener listener;
+        onClick();
+        saveData();
+        getData();
+   }
+   class AdminActivity{
+        addNew();
+        deleteOne();
+        deleteAll();
+        updateOne(Goods good);
+        getData();
+        sendMessage(String s);
+   }
+
+
+
+
+}
+package "web"{
+
+}
+package "javaServer"{
+    class JPushUtil;
+    class GoodsController;
+    class AdminController;
+    class UUID;
+}
+
+
+@enduml

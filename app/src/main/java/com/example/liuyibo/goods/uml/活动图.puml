@@ -1,0 +1,13 @@
+
+@startuml
+(*)  --> "启动界面"
+"启动界面" -->"主界面（searchview，Recyclerview,floatingactionbutton）"
+If "点击管理员登陆" then
+--> [Yes] "管理员登陆界面"
+--> "更改商品/添加删除商品"
+-->(*)
+else
+--> [No](*)
+Endif
+
+@enduml

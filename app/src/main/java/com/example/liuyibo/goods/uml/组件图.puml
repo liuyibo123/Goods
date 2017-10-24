@@ -1,0 +1,16 @@
+@startuml
+
+package "Server" {
+[db] <- [webservice]
+[webservice] -- http
+}
+package "Android" {
+http <-- [network]
+[networkUtil] --> [android ]
+}
+package "web"{
+   http <- [js]
+   [js] -- [html]
+}
+
+@enduml
