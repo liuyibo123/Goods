@@ -5,9 +5,9 @@ package com.example.liuyibo.goods;
  */
 
 public class Config {
-    private final int isAdmin = 1;
-    private final int isNotAdmin = 2;
-    private static int adminFlag;
+    public  static final int isAdmin = 1;
+    public  static final int isNotAdmin = 2;
+    public  static int adminFlag=2;
     public static int getAdminFlag() {
         return adminFlag;
     }

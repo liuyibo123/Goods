@@ -52,6 +52,9 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        if(Config.getAdminFlag()==Config.isNotAdmin){
+            menuLabelsRight.hideMenu(true);
+        }
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
