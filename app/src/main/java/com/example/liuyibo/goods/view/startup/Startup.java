@@ -11,6 +11,7 @@ import android.widget.ImageView;
 
 import com.example.liuyibo.goods.MainActivity;
 import com.example.liuyibo.goods.R;
+import com.example.liuyibo.goods.view.activity.LoginActivity;
 
 /**
  * Created by Administrator on 2017/8/23 0023.
@@ -24,7 +25,7 @@ public class Startup extends AppCompatActivity{
         setContentView(R.layout.startup);
         welcomeImg = (ImageView) this.findViewById(R.id.imageView3);
         AlphaAnimation anima = new AlphaAnimation(0.3f, 1.0f);
-        anima.setDuration(4000);// 设置动画显示时间
+        anima.setDuration(2000);// 设置动画显示时间
         welcomeImg.startAnimation(anima);
         anima.setAnimationListener(new AnimationImpl());
     }
@@ -42,7 +43,7 @@ public class Startup extends AppCompatActivity{
 
     }
     private void skip(){
-        startActivity(new Intent(this, MainActivity.class));
+        startActivity(new Intent(this, LoginActivity.class));
         finish();
     }
 

@@ -34,13 +34,15 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
         <activity android:name=".MainActivity" >
+
+        </activity>
+        <activity android:name=".view.startup.Startup">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <service
             android:name="cn.jpush.android.service.PushService"
             android:enabled="true"
@@ -113,7 +115,7 @@
 
         <activity android:name=".view.activity.AddNewActivity" />
         <activity
-            android:name=".LoginActivity"
+            android:name=".view.activity.LoginActivity"
             android:label="@string/title_activity_login" >
         </activity>
     </application>

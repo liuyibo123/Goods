@@ -4,7 +4,7 @@ package com.example.liuyibo.goods.utils.network;
  */
 
 public class ConConfig {
-    public static String url = "http://kameng98.com";
+    public static String url="http://172.25.208.125:8080";
     public static void setUrl(String url_string){
         url = url_string;
     }

@@ -3,6 +3,7 @@ package com.example.liuyibo.goods.view.activity;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
@@ -19,6 +20,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -28,10 +30,22 @@ import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import java.util.ArrayList;
 import java.util.List;
+
+import com.example.liuyibo.goods.Config;
+import com.example.liuyibo.goods.MainActivity;
+import com.example.liuyibo.goods.MyApplication;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.utils.MD5;
+import com.example.liuyibo.goods.utils.network.MyRetrofit;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
 
 import static android.Manifest.permission.READ_CONTACTS;
 
@@ -56,7 +70,6 @@ public class LoginActivity extends AppCompatActivity  {
         setContentView(R.layout.activity_login);
         // Set up the login form.
         mEmailView = (AutoCompleteTextView) findViewById(R.id.email);
-        populateAutoComplete();
         mPasswordView = (EditText) findViewById(R.id.password);
         mPasswordView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
@@ -70,6 +83,7 @@ public class LoginActivity extends AppCompatActivity  {
         });
 
         Button mEmailSignInButton = (Button) findViewById(R.id.email_sign_in_button);
+
         mEmailSignInButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -81,9 +95,7 @@ public class LoginActivity extends AppCompatActivity  {
         mProgressView = findViewById(R.id.login_progress);
     }
 
-    private void populateAutoComplete() {
-        //TODO 添加下拉选项
-    }
+
 
     private void attemptLogin() {
         if (mAuthTask != null) {
@@ -99,20 +111,6 @@ public class LoginActivity extends AppCompatActivity  {
         boolean cancel = false;
         View focusView = null;
 
-        // Check for a valid password, if the user entered one.
-        if (!TextUtils.isEmpty(password) && !isPasswordValid(password)) {
-            mPasswordView.setError(getString(R.string.error_invalid_password));
-            focusView = mPasswordView;
-            cancel = true;
-        }
-
-        // Check for a valid email address.
-        if (TextUtils.isEmpty(email)) {
-            mEmailView.setError(getString(R.string.error_field_required));
-            focusView = mEmailView;
-            cancel = true;
-        }
-
         if (cancel) {
             // There was an error; don't attempt login and focus the first
             // form field with an error.
@@ -124,12 +122,6 @@ public class LoginActivity extends AppCompatActivity  {
             mAuthTask = new UserLoginTask(email, password);
             mAuthTask.execute((Void) null);
         }
-    }
-
-
-    private boolean isPasswordValid(String password) {
-        //TODO: Replace this with your own logic
-        return password.length() > 4;
     }
 
     /**
@@ -200,13 +192,19 @@ public class LoginActivity extends AppCompatActivity  {
         @Override
         protected Boolean doInBackground(Void... params) {
             try {
-                //TODO 登陆验证
-                String password = md5.getMD5ofStr(mPassword);
-                Thread.sleep(2000);
-            } catch (InterruptedException e) {
+                Call<String> call = MyRetrofit.requestService.validate(mEmail,mPassword);
+                Response<String> response = call.execute();
+                Log.d("LoginActivity", "doInBackground: "+response.body());
+                if ("1".equals(response.body())){
+                    Config.setAdminFlag(Config.isAdmin);
+                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                }
+
+            } catch (Exception e) {
+                Log.d("LoginActivity", "doInBackground: "+e.getMessage());
                 return false;
             }
-
+            Log.d("LoginActivity", "adminflag == "+Config.getAdminFlag());
             return true;
         }
 

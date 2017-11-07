@@ -10,10 +10,12 @@ import java.util.Map;
 
 import retrofit2.Call;
 
+import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Query;
 
 
 /**
@@ -37,6 +39,12 @@ public interface RequestService {
 //    @FormUrlEncoded
 //    @POST("/api/mobile/credit_data/")
 //    Call<JSONArray> credit_data(@Field("p") String page);
-    @GET("/getAll")
+    @GET("/selectAll")
     Call<List<Goods>> getAll();
+    @POST("/validate")
+    Call<String> validate(@Query("username") String username, @Query("password") String password);
+    @POST("/addnew")
+    Call<String> addnew (@Body Goods goods);
+    @GET("/delete")
+    Call<String> delete(@Query("id")long id);
 }
