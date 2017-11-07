@@ -58,11 +58,11 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         MyViewHolder holder1 = ((MyViewHolder) holder);
         Goods goods = goodsList.get(position);
         current = goods;
-        holder1.tvName.setText(goods.getName());
-        holder1.tvPrice.setText(goods.getPrice());
-        holder1.tvDw.setText(goods.getDw());
-        holder1.tvCategory.setText(goods.getCategory());
-        holder1.tvBz.setText(goods.getBz());
+        holder1.tvName.append(goods.getName());
+        holder1.tvPrice.append(goods.getPrice());
+        holder1.tvDw.append(goods.getDw());
+        holder1.tvCategory.append(goods.getCategory());
+        holder1.tvBz.append(goods.getBz());
         holder1.itemView.setTag(position);
     }
 

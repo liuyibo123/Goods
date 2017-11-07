@@ -67,6 +67,7 @@ public class AddNewActivity extends AppCompatActivity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_sure:
+                btnSure.setEnabled(false);
                 if(flag==1){
                     //todo delete
                     Call<String> call = MyRetrofit.requestService.delete(id);
@@ -95,6 +96,7 @@ public class AddNewActivity extends AppCompatActivity {
                     public void onResponse(Call<String> call, Response<String> response) {
                         if("1".equals(response.body())){
                             Toast.makeText(MyApplication.getContext(),"保存成功",Toast.LENGTH_LONG).show();
+                            AddNewActivity.this.finish();
                         }else {
                             Toast.makeText(MyApplication.getContext(),"保存失败",Toast.LENGTH_LONG).show();
                         }
@@ -107,6 +109,11 @@ public class AddNewActivity extends AppCompatActivity {
                 });
                 break;
             case R.id.btn_cancel:
+                etPrice.setText("");
+                etDw.setText("");
+                etCategory.setText("");
+                etBz.setText("");
+                etName.setText("");
                 break;
         }
     }

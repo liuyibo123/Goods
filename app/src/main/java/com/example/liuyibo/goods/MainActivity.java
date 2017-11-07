@@ -22,6 +22,7 @@ import com.example.liuyibo.goods.view.activity.AddNewActivity;
 import com.example.liuyibo.goods.view.recyclerview.GoodsAdapter;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.github.jdsjlzx.recyclerview.LRecyclerViewAdapter;
 
 import java.util.List;
 
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionMenu menuLabelsRight;
     private DaoSession daoSession;
     private GoodsDao goodsDao;
-
+    private LRecyclerViewAdapter mAdapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -149,7 +150,8 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
-        recycler.setAdapter(adapter);
+        mAdapter = new LRecyclerViewAdapter(adapter);
+        recycler.setAdapter(mAdapter);
 
     }
 
