@@ -43,7 +43,7 @@ public class Startup extends AppCompatActivity{
 
     }
     private void skip(){
-        startActivity(new Intent(this, LoginActivity.class));
+        startActivity(new Intent(this, MainActivity.class));
         finish();
     }
 

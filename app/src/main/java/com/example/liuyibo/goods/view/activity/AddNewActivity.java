@@ -76,7 +76,6 @@ public class AddNewActivity extends AppCompatActivity {
                         public void onResponse(Call<String> call, Response<String> response) {
                             Log.d(TAG, "onResponse: 删除原有东西成功");
                         }
-
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
 
@@ -94,7 +93,9 @@ public class AddNewActivity extends AppCompatActivity {
                 call.enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
+                        Log.d(TAG, "onResponse: "+response.body());
                         if("1".equals(response.body())){
+
                             Toast.makeText(MyApplication.getContext(),"保存成功",Toast.LENGTH_LONG).show();
                             AddNewActivity.this.finish();
                         }else {

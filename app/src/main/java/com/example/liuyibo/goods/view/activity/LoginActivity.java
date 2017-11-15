@@ -40,6 +40,7 @@ import com.example.liuyibo.goods.MainActivity;
 import com.example.liuyibo.goods.MyApplication;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.utils.MD5;
+import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
 import com.example.liuyibo.goods.utils.network.MyRetrofit;
 
 import retrofit2.Call;
@@ -164,16 +165,6 @@ public class LoginActivity extends AppCompatActivity  {
 
 
 
-    
-
-    private void addEmailsToAutoComplete(List<String> emailAddressCollection) {
-        //Create adapter to tell the AutoCompleteTextView what to show in its dropdown list.
-        ArrayAdapter<String> adapter =
-                new ArrayAdapter<>(LoginActivity.this,
-                        android.R.layout.simple_dropdown_item_1line, emailAddressCollection);
-
-        mEmailView.setAdapter(adapter);
-    }
 
     /**
      * Represents an asynchronous login/registration task used to authenticate
@@ -197,14 +188,20 @@ public class LoginActivity extends AppCompatActivity  {
                 Log.d("LoginActivity", "doInBackground: "+response.body());
                 if ("1".equals(response.body())){
                     Config.setAdminFlag(Config.isAdmin);
-                    startActivity(new Intent(LoginActivity.this, MainActivity.class));
+                    SharedPreferenceUtil.setString("admin","adminFlag","1");
+                    LoginActivity.this.finish();
+                }
+                else {
+                    return false;
                 }
 
             } catch (Exception e) {
                 Log.d("LoginActivity", "doInBackground: "+e.getMessage());
+
                 return false;
             }
             Log.d("LoginActivity", "adminflag == "+Config.getAdminFlag());
+
             return true;
         }
 
@@ -212,12 +209,14 @@ public class LoginActivity extends AppCompatActivity  {
         protected void onPostExecute(final Boolean success) {
             mAuthTask = null;
             showProgress(false);
-
             if (success) {
+                Toast.makeText(MyApplication.getContext(),"登陆成功",Toast.LENGTH_SHORT).show();
                 finish();
             } else {
                 mPasswordView.setError(getString(R.string.error_incorrect_password));
                 mPasswordView.requestFocus();
+                Toast.makeText(MyApplication.getContext(),"登陆失败",Toast.LENGTH_SHORT).show();
+                LoginActivity.this.finish();
             }
         }
 

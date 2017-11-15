@@ -1,5 +1,7 @@
 package com.example.liuyibo.goods;
 
+import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
+
 /**
  * Created by Administrator on 2017/10/24.
  */
@@ -7,7 +9,7 @@ package com.example.liuyibo.goods;
 public class Config {
     public  static final int isAdmin = 1;
     public  static final int isNotAdmin = 2;
-    public  static int adminFlag=2;
+    public  static int adminFlag= 2;
     public static int getAdminFlag() {
         return adminFlag;
     }

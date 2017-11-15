@@ -10,10 +10,17 @@ import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class MyRetrofit {
     public static Retrofit retrofit= new Retrofit.Builder()
-            .baseUrl(ConConfig.url)
+            .baseUrl(ConConfig.getUrl())
                             .addConverterFactory(GsonConverterFactory.create())
                             .addConverterFactory(ScalarsConverterFactory.create())
             .build();
+    public static void resetRetrofit(){
+        retrofit = new Retrofit.Builder()
+                .baseUrl(ConConfig.getUrl())
+                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+    }
     public static RequestService requestService = retrofit.create(RequestService.class);
 
 }

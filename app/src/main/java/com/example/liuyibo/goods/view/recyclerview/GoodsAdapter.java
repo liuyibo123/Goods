@@ -14,9 +14,11 @@ import android.widget.PopupMenu;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.liuyibo.goods.Config;
 import com.example.liuyibo.goods.MyApplication;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.entity.Goods;
+import com.example.liuyibo.goods.utils.network.ConConfig;
 
 import java.util.List;
 
@@ -68,8 +70,12 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
 
     @Override
     public int getItemCount() {
+        if(goodsList==null){
+            return 0;
+        }
         return goodsList.size();
     }
+
 
     class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
 
@@ -99,18 +105,23 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         @Override
         public void onClick(View view) {
             Log.d("MyViewHodler", "MyViewHolder: "+"onclick");
-            PopupMenu popupmenu = new PopupMenu(MyApplication.getContext(),view);
-            Menu menu = popupmenu.getMenu();
-            menu.add(Menu.NONE, Menu.FIRST + 0, 0, "更改");
-            menu.add(Menu.NONE, Menu.FIRST + 1, 1, "删除");
-            popupmenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
-                @Override
-                public boolean onMenuItemClick(MenuItem menuItem) {
-                    popupMenuItemClickListener.click(menuItem.getItemId(),current);
-                    return false;
-                }
-            });
-            popupmenu.show();
+            if(Config.getAdminFlag()==Config.isAdmin){
+                PopupMenu popupmenu = new PopupMenu(MyApplication.getContext(),view);
+                Menu menu = popupmenu.getMenu();
+                menu.add(Menu.NONE, Menu.FIRST + 0, 0, "更改");
+                menu.add(Menu.NONE, Menu.FIRST + 1, 1, "删除");
+                popupmenu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                    @Override
+                    public boolean onMenuItemClick(MenuItem menuItem) {
+                        if(popupMenuItemClickListener!=null){
+                            popupMenuItemClickListener.click(menuItem.getItemId(),current);
+                        }
+                        return false;
+                    }
+                });
+                popupmenu.show();
+            }
+
         }
     }
 }
