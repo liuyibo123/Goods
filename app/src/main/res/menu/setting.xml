@@ -21,4 +21,10 @@
         android:icon="@android:drawable/ic_lock_lock"
         android:title="登录为管理员"
         android:visible="true" />
+    <item
+        android:id="@+id/logout"
+        android:enabled="true"
+        android:title="注销"
+        android:visible="true" />
+
 </menu>

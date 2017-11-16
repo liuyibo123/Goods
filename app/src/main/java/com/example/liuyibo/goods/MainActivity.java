@@ -109,7 +109,23 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent);
                         break;
                     case R.id.login:
+                        if(Config.getAdminFlag()==Config.isAdmin)
+                        {
+                            Toast.makeText(MainActivity.this,"已经登陆，不能重复登陆",Toast.LENGTH_SHORT).show();
+                            break;
+                        }
                         startActivity(new Intent(MainActivity.this, LoginActivity.class));
+                        break;
+                    case R.id.logout:
+                        if(Config.getAdminFlag()==Config.isNotAdmin)
+                        {
+                            Toast.makeText(MainActivity.this,"请先登录",Toast.LENGTH_SHORT).show();
+                            break;
+                        }
+                        SharedPreferenceUtil.clearString("admin");
+                        Config.setAdminFlag(Config.isNotAdmin);
+                        Toast.makeText(MainActivity.this,"注销成功",Toast.LENGTH_SHORT).show();
+
                         break;
                 }
                 return true;

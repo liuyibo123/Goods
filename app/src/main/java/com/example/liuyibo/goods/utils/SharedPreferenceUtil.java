@@ -24,4 +24,10 @@ public class SharedPreferenceUtil {
         editor.putString(key,value);
         editor.commit();
     }
+    public static void clearString(String spname){
+        sharedPreferences = MyApplication.getContext().getSharedPreferences(spname, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
+        editor.commit();
+    }
 }

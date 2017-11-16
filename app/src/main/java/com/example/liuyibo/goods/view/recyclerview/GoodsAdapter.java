@@ -77,7 +77,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
 
 
-    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+    class MyViewHolder extends RecyclerView.ViewHolder implements View.OnLongClickListener{
 
         @BindView(R.id.imageView)
         ImageView imageView;
@@ -98,12 +98,13 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             super(view);
             ButterKnife.bind(this, view);
             Log.d("MyViewHodler", "MyViewHolder: "+"before setonClickListener");
-            view.setOnClickListener(this);
+            view.setOnLongClickListener(this);
             Log.d("MyViewHodler", "MyViewHolder: "+"after setonClickListener");
 
         }
+
         @Override
-        public void onClick(View view) {
+        public boolean onLongClick(View view) {
             Log.d("MyViewHodler", "MyViewHolder: "+"onclick");
             if(Config.getAdminFlag()==Config.isAdmin){
                 PopupMenu popupmenu = new PopupMenu(MyApplication.getContext(),view);
@@ -121,7 +122,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
                 });
                 popupmenu.show();
             }
-
+            return false;
         }
     }
 }
