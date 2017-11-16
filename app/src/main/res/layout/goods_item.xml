@@ -13,9 +13,8 @@
         android:id="@+id/imageView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="24dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginStart="64dp"
+        android:layout_marginTop="40dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/ic_car2"
@@ -23,12 +22,12 @@
 
     <TextView
         android:id="@+id/tv_name"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="17dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:text="名称：  "
         app:layout_constraintEnd_toEndOf="parent"
@@ -38,12 +37,12 @@
 
     <TextView
         android:id="@+id/tv_price"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="4dp"
         android:text="价格：  "
         app:layout_constraintEnd_toEndOf="parent"
@@ -52,12 +51,12 @@
 
     <TextView
         android:id="@+id/tv_dw"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:text="单位：  "
         app:layout_constraintEnd_toEndOf="parent"
@@ -66,12 +65,12 @@
 
     <TextView
         android:id="@+id/tv_category"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="16dp"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:text="种类：  "
         app:layout_constraintEnd_toEndOf="parent"
@@ -81,12 +80,12 @@
 
     <TextView
         android:id="@+id/tv_bz"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="8dp"
-        android:layout_marginStart="16dp"
+        android:layout_marginStart="32dp"
         android:layout_marginTop="8dp"
         android:text="备注：  "
         app:layout_constraintEnd_toEndOf="parent"
@@ -99,6 +98,8 @@
         android:layout_height="2dp"
         android:layout_marginBottom="0dp"
         android:layout_marginEnd="0dp"
+        android:layout_marginLeft="-10dp"
+        android:layout_marginRight="0dp"
         android:layout_marginStart="-10dp"
         android:layout_marginTop="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -106,7 +107,5 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_bz"
         app:srcCompat="@color/divider"
-        tools:layout_editor_absoluteY="143dp"
-        android:layout_marginRight="0dp"
-        android:layout_marginLeft="-10dp" />
+        tools:layout_editor_absoluteY="143dp" />
 </android.support.constraint.ConstraintLayout>
