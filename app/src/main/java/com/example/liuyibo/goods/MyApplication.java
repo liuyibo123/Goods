@@ -2,6 +2,10 @@ package com.example.liuyibo.goods;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
+import android.provider.Settings;
+import android.support.v4.app.NotificationManagerCompat;
 
 import com.example.liuyibo.goods.dao.GreenDaoManager;
 import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
@@ -30,6 +34,7 @@ public class MyApplication extends Application {
             ConConfig.setIpString(ipString);
             ConConfig.setPortString(portString);
         }
+
 
 
     }

@@ -2,10 +2,13 @@ package com.example.liuyibo.goods;
 
 import android.app.ActionBar;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.print.PrintAttributes;
+import android.provider.Settings;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -83,7 +86,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void init() {
-
+        NotificationManagerCompat managerCompat = NotificationManagerCompat.from(MyApplication.getContext());
+        boolean isOpened = managerCompat.areNotificationsEnabled();
+        if(!isOpened){
+            if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                Intent intent = new Intent();
+                intent.setAction("android.settings.APP_NOTIFICATION_SETTINGS");
+                intent.putExtra("app_package", getPackageName());
+                intent.putExtra("app_uid", getApplicationInfo().uid);
+                startActivity(intent);
+            } else if (android.os.Build.VERSION.SDK_INT == Build.VERSION_CODES.KITKAT) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.addCategory(Intent.CATEGORY_DEFAULT);
+                intent.setData(Uri.parse("package:" + getPackageName()));
+                startActivity(intent);
+            }
+        }
         add = findViewById(R.id.add);
         recycler = findViewById(R.id.recycler);
         RecyclerView.LayoutManager manager = new LinearLayoutManager(MainActivity.this);
@@ -131,6 +150,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                         SharedPreferenceUtil.clearString("admin");
                         Config.setAdminFlag(Config.isNotAdmin);
+                        menuLabelsRight.hideMenu(true);
                         Toast.makeText(MainActivity.this,"注销成功",Toast.LENGTH_SHORT).show();
 
                         break;

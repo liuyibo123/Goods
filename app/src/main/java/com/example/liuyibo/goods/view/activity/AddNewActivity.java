@@ -109,6 +109,33 @@ public class AddNewActivity extends AppCompatActivity {
 
                         }
                     });
+                }else{
+                    Goods goods = new Goods();
+                    goods.setName(etName.getText().toString());
+                    goods.setBz(etBz.getText().toString());
+                    goods.setCategory(etCategory.getText().toString());
+                    goods.setDw(etDw.getText().toString());
+                    goods.setPrice(etPrice.getText().toString());
+                    goods.setIdnumber(etId.getText().toString());
+                    Log.d(TAG, "onViewClicked: " + goods.getBz() + goods.getCategory() + goods.getDw() + goods.getName() + goods.getPrice() + goods.getId()+goods.getIdnumber());
+                    Call<String> call2 = MyRetrofit.requestService.addnew(goods);
+                    call2.enqueue(new Callback<String>() {
+                        @Override
+                        public void onResponse(Call<String> call, Response<String> response) {
+                            Log.d(TAG, "onResponse: " + response.body());
+                            if ("1".equals(response.body())) {
+                                Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
+                                AddNewActivity.this.finish();
+                            } else {
+                                Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(Call<String> call, Throwable t) {
+                            Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+                        }
+                    });
                 }
 
                 break;
