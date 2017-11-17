@@ -59,12 +59,12 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         //TODO 网址转换成图片
         MyViewHolder holder1 = ((MyViewHolder) holder);
         Goods goods = goodsList.get(position);
-        current = goods;
-        holder1.tvName.append(goods.getName());
-        holder1.tvPrice.append(goods.getPrice());
-        holder1.tvDw.append(goods.getDw());
-        holder1.tvCategory.append(goods.getCategory());
-        holder1.tvBz.append(goods.getBz());
+        holder1.tvName.append(goods.getName()!=null?goods.getName():"");
+        holder1.tvPrice.append(goods.getPrice()!=null?goods.getPrice():"");
+        holder1.tvDw.append(goods.getDw()!=null?goods.getDw():"");
+        holder1.tvCategory.append(goods.getCategory()!=null?goods.getCategory():"");
+        holder1.tvBz.append(goods.getBz()!=null?goods.getBz():"");
+        holder1.tvID.append(goods.getIdnumber()!=null?goods.getIdnumber():"");
         holder1.itemView.setTag(position);
     }
 
@@ -83,6 +83,8 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         ImageView imageView;
         @BindView(R.id.tv_name)
         TextView tvName;
+        @BindView(R.id.text_id)
+        TextView tvID;
         @BindView(R.id.tv_price)
         TextView tvPrice;
         @BindView(R.id.tv_dw)
@@ -108,6 +110,8 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
             Log.d("MyViewHodler", "MyViewHolder: "+"onclick");
             if(Config.getAdminFlag()==Config.isAdmin){
                 PopupMenu popupmenu = new PopupMenu(MyApplication.getContext(),view);
+                int position = (int) view.getTag();
+                final Goods current = goodsList.get(position);
                 Menu menu = popupmenu.getMenu();
                 menu.add(Menu.NONE, Menu.FIRST + 0, 0, "更改");
                 menu.add(Menu.NONE, Menu.FIRST + 1, 1, "删除");

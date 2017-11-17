@@ -10,11 +10,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.example.liuyibo.goods.MyApplication;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.entity.Goods;
-import com.example.liuyibo.goods.utils.UUID;
 import com.example.liuyibo.goods.utils.network.MyRetrofit;
 
 import butterknife.BindView;
@@ -26,6 +24,8 @@ import retrofit2.Response;
 
 public class AddNewActivity extends AppCompatActivity {
     private final String TAG = "MainActivity ";
+    @BindView(R.id.et_id)
+    EditText etId;
     private int flag = 0;
     private long id;
     @BindView(R.id.et_name)
@@ -50,15 +50,16 @@ public class AddNewActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         Intent intent = getIntent();
         String json = intent.getStringExtra("current");
-        if(json!=null&&!"".equals(json)){
+        if (json != null && !"".equals(json)) {
             flag = 1;
-            Log.d(TAG, "json: "+json);
-            Goods goods = JSON.parseObject(json,Goods.class);
+            Log.d(TAG, "json: " + json);
+            Goods goods = JSON.parseObject(json, Goods.class);
             etName.setText(goods.getName());
             etBz.setText(goods.getBz());
             etCategory.setText(goods.getCategory());
             etDw.setText(goods.getDw());
             etPrice.setText(goods.getPrice());
+            etId.setText(goods.getIdnumber());
             id = goods.getId();
         }
     }
@@ -68,46 +69,48 @@ public class AddNewActivity extends AppCompatActivity {
         switch (view.getId()) {
             case R.id.btn_sure:
                 btnSure.setEnabled(false);
-                if(flag==1){
+                if (flag == 1) {
                     //todo delete
                     Call<String> call = MyRetrofit.requestService.delete(id);
                     call.enqueue(new Callback<String>() {
                         @Override
                         public void onResponse(Call<String> call, Response<String> response) {
                             Log.d(TAG, "onResponse: 删除原有东西成功");
+                            Goods goods = new Goods();
+                            goods.setName(etName.getText().toString());
+                            goods.setBz(etBz.getText().toString());
+                            goods.setCategory(etCategory.getText().toString());
+                            goods.setDw(etDw.getText().toString());
+                            goods.setPrice(etPrice.getText().toString());
+                            goods.setIdnumber(etId.getText().toString());
+                            Log.d(TAG, "onViewClicked: " + goods.getBz() + goods.getCategory() + goods.getDw() + goods.getName() + goods.getPrice() + goods.getId()+goods.getIdnumber());
+                            Call<String> call2 = MyRetrofit.requestService.addnew(goods);
+                            call2.enqueue(new Callback<String>() {
+                                @Override
+                                public void onResponse(Call<String> call, Response<String> response) {
+                                    Log.d(TAG, "onResponse: " + response.body());
+                                    if ("1".equals(response.body())) {
+                                        Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
+                                        AddNewActivity.this.finish();
+                                    } else {
+                                        Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<String> call, Throwable t) {
+                                    Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
+
                         @Override
                         public void onFailure(Call<String> call, Throwable t) {
 
                         }
                     });
                 }
-                Goods goods = new Goods();
-                goods.setName(etName.getText().toString());
-                goods.setBz(etBz.getText().toString());
-                goods.setCategory(etCategory.getText().toString());
-                goods.setDw(etDw.getText().toString());
-                goods.setPrice(etPrice.getText().toString());
-                Log.d("Goods", "onViewClicked: "+goods.getBz()+goods.getCategory()+goods.getDw()+goods.getName()+goods.getPrice()+goods.getId());
-                Call<String> call = MyRetrofit.requestService.addnew(goods);
-                call.enqueue(new Callback<String>() {
-                    @Override
-                    public void onResponse(Call<String> call, Response<String> response) {
-                        Log.d(TAG, "onResponse: "+response.body());
-                        if("1".equals(response.body())){
 
-                            Toast.makeText(MyApplication.getContext(),"保存成功",Toast.LENGTH_LONG).show();
-                            AddNewActivity.this.finish();
-                        }else {
-                            Toast.makeText(MyApplication.getContext(),"保存失败",Toast.LENGTH_LONG).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<String> call, Throwable t) {
-                        Toast.makeText(MyApplication.getContext(),"保存失败",Toast.LENGTH_LONG).show();
-                    }
-                });
                 break;
             case R.id.btn_cancel:
                 etPrice.setText("");

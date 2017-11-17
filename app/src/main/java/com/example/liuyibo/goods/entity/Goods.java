@@ -17,9 +17,10 @@ public class Goods {
     private String category;
     private String bz;
     private String imageUrl;
-    @Generated(hash = 1740596642)
+    private String idnumber;
+    @Generated(hash = 1744256925)
     public Goods(long id, String name, String price, String dw, String category,
-            String bz, String imageUrl) {
+            String bz, String imageUrl, String idnumber) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -27,6 +28,7 @@ public class Goods {
         this.category = category;
         this.bz = bz;
         this.imageUrl = imageUrl;
+        this.idnumber = idnumber;
     }
     @Generated(hash = 1770709345)
     public Goods() {
@@ -72,6 +74,12 @@ public class Goods {
     }
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+    }
+    public String getIdnumber() {
+        return this.idnumber;
+    }
+    public void setIdnumber(String idnumber) {
+        this.idnumber = idnumber;
     }
     
 }

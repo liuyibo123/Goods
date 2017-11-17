@@ -33,6 +33,9 @@ import com.example.liuyibo.goods.view.activity.SettingActivity;
 import com.example.liuyibo.goods.view.recyclerview.GoodsAdapter;
 import com.github.clans.fab.FloatingActionButton;
 import com.github.clans.fab.FloatingActionMenu;
+import com.scwang.smartrefresh.layout.SmartRefreshLayout;
+import com.scwang.smartrefresh.layout.api.RefreshLayout;
+import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
 import java.security.Permission;
 import java.util.ArrayList;
@@ -42,7 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import cn.jpush.android.ui.PushActivity;
-import jp.co.recruit_lifestyle.android.widget.BeerSwipeRefreshLayout;
+
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -52,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
     @BindView(R.id.recycler)
     RecyclerView recycler;
     @BindView(R.id.main_swipe)
-    BeerSwipeRefreshLayout mainSwipe;
+    SmartRefreshLayout mainSwipe;
     private List<Goods> goodsList = null;
 
     @BindView(R.id.add)
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        getData();
+        getData(null);
         if(Config.getAdminFlag()==Config.isAdmin){
             menuLabelsRight.showMenu(true);
         }
@@ -83,6 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
         add = findViewById(R.id.add);
         recycler = findViewById(R.id.recycler);
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(MainActivity.this);
+        recycler.setLayoutManager(manager);
         menuLabelsRight = findViewById(R.id.menu_labels_right);
         if (Config.getAdminFlag() == Config.isNotAdmin) {
             menuLabelsRight.hideMenu(true);
@@ -90,13 +95,15 @@ public class MainActivity extends AppCompatActivity {
 
         daoSession = GreenDaoManager.getInstance().getmDaoSession();
         goodsDao = daoSession.getGoodsDao();
-        getData();
-        mainSwipe.setOnRefreshListener(new BeerSwipeRefreshLayout.OnRefreshListener() {
+        getData(null);
+        mainSwipe.setOnRefreshListener(new OnRefreshListener() {
             @Override
-            public void onRefresh() {
-                new Task().execute();
+            public void onRefresh(RefreshLayout refreshlayout) {
+                getData(refreshlayout);
+                refreshlayout.finishRefresh();
             }
         });
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("");
         setSupportActionBar(toolbar);
@@ -171,22 +178,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private class Task extends AsyncTask<Void, Void, String[]> {
-        @Override
-        protected String[] doInBackground(Void... voids) {
-            mainSwipe.setRefreshing(true);
-            getData();
-            //todo beer 流下来
-
-            return new String[0];
-        }
-
-        @Override protected void onPostExecute(String[] result) {
-            // Call setRefreshing(false) when the list has been refreshed.
-            mainSwipe.setRefreshing(false);
-            super.onPostExecute(result);
-        }
-    }
 
     @OnClick({ R.id.add, R.id.menu_labels_right})
     public void onViewClicked(View view) {
@@ -200,7 +191,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void getData() {
+    private void getData(final RefreshLayout refreshLayout) {
 //        if (goodsDao != null&&a==0) {
 //            List<Goods> goodsList1 = goodsDao.loadAll();
 //            if (goodsList1.size() > 0) {
@@ -215,6 +206,9 @@ public class MainActivity extends AppCompatActivity {
             public void onResponse(Call<List<Goods>> call, Response<List<Goods>> response) {
                 goodsList = response.body();
                 initRecyclerView(goodsList);
+                if(refreshLayout!=null){
+                    refreshLayout.finishRefresh();
+                }
             }
 
             @Override
@@ -227,8 +221,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void initRecyclerView(List<Goods> goodsList) {
         GoodsAdapter adapter = new GoodsAdapter(goodsList);
-        RecyclerView.LayoutManager manager = new LinearLayoutManager(MainActivity.this);
-        recycler.setLayoutManager(manager);
+
         if(Config.getAdminFlag()==Config.isAdmin){
             adapter.setOnPopupmenuItemClickListener(new GoodsAdapter.PopupMenuItemClickListener() {
                 @Override
@@ -246,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onResponse(Call<String> call, Response<String> response) {
                                     Toast.makeText(MyApplication.getContext(), "删除成功", Toast.LENGTH_SHORT).show();
-                                    getData();
+                                    getData(null);
                                 }
 
                                 @Override

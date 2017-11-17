@@ -31,6 +31,7 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
         public final static Property Category = new Property(4, String.class, "category", false, "CATEGORY");
         public final static Property Bz = new Property(5, String.class, "bz", false, "BZ");
         public final static Property ImageUrl = new Property(6, String.class, "imageUrl", false, "IMAGE_URL");
+        public final static Property Idnumber = new Property(7, String.class, "idnumber", false, "IDNUMBER");
     }
 
 
@@ -52,7 +53,8 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
                 "\"DW\" TEXT," + // 3: dw
                 "\"CATEGORY\" TEXT," + // 4: category
                 "\"BZ\" TEXT," + // 5: bz
-                "\"IMAGE_URL\" TEXT);"); // 6: imageUrl
+                "\"IMAGE_URL\" TEXT," + // 6: imageUrl
+                "\"IDNUMBER\" TEXT);"); // 7: idnumber
     }
 
     /** Drops the underlying database table. */
@@ -95,6 +97,11 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
         if (imageUrl != null) {
             stmt.bindString(7, imageUrl);
         }
+ 
+        String idnumber = entity.getIdnumber();
+        if (idnumber != null) {
+            stmt.bindString(8, idnumber);
+        }
     }
 
     @Override
@@ -131,6 +138,11 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
         if (imageUrl != null) {
             stmt.bindString(7, imageUrl);
         }
+ 
+        String idnumber = entity.getIdnumber();
+        if (idnumber != null) {
+            stmt.bindString(8, idnumber);
+        }
     }
 
     @Override
@@ -147,7 +159,8 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
             cursor.isNull(offset + 3) ? null : cursor.getString(offset + 3), // dw
             cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4), // category
             cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5), // bz
-            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6) // imageUrl
+            cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6), // imageUrl
+            cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7) // idnumber
         );
         return entity;
     }
@@ -161,6 +174,7 @@ public class GoodsDao extends AbstractDao<Goods, Long> {
         entity.setCategory(cursor.isNull(offset + 4) ? null : cursor.getString(offset + 4));
         entity.setBz(cursor.isNull(offset + 5) ? null : cursor.getString(offset + 5));
         entity.setImageUrl(cursor.isNull(offset + 6) ? null : cursor.getString(offset + 6));
+        entity.setIdnumber(cursor.isNull(offset + 7) ? null : cursor.getString(offset + 7));
      }
     
     @Override
