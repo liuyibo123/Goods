@@ -30,7 +30,7 @@ import butterknife.ButterKnife;
  */
 
 public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>  {
-
+    private final String TAG = "GoodsAdapter";
     private List<Goods> goodsList;
     private static int viewHolderCount;
     private Goods current;
@@ -51,6 +51,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.goods_item, parent, false);
         viewHolderCount++;
+        Log.d(TAG, "onCreateViewHolder: new myviewholder");
         return new MyViewHolder(view);
     }
 
@@ -59,12 +60,15 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         //TODO 网址转换成图片
         MyViewHolder holder1 = ((MyViewHolder) holder);
         Goods goods = goodsList.get(position);
-        holder1.tvName.append(goods.getName()!=null?goods.getName():"");
-        holder1.tvPrice.append(goods.getPrice()!=null?goods.getPrice():"");
-        holder1.tvDw.append(goods.getDw()!=null?goods.getDw():"");
-        holder1.tvCategory.append(goods.getCategory()!=null?goods.getCategory():"");
-        holder1.tvBz.append(goods.getBz()!=null?goods.getBz():"");
-        holder1.tvID.append(goods.getIdnumber()!=null?goods.getIdnumber():"");
+        Log.d(TAG, "onBindViewHolder: "+goods.getName()+"   "+position);
+
+        holder1.tvName.setText("名称："+(goods.getName()!=null?goods.getName():""));
+        holder1.tvPrice.setText("单价："+(goods.getPrice()!=null?goods.getPrice():""));
+        holder1.tvDw.setText("单位："+(goods.getDw()!=null?goods.getDw():""));
+        holder1.tvDw.setText("单位："+(goods.getDw()!=null?goods.getDw():""));
+        holder1.tvCategory.setText("分类："+(goods.getCategory()!=null?goods.getCategory():""));
+        holder1.tvBz.setText("备注："+(goods.getBz()!=null?goods.getBz():""));
+        holder1.tvID.setText("编号："+(goods.getIdnumber()!=null?goods.getIdnumber():""));
         holder1.itemView.setTag(position);
     }
 
