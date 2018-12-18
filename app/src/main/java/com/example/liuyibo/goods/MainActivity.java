@@ -1,7 +1,9 @@
 package com.example.liuyibo.goods;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -218,7 +220,7 @@ private final String TAG ="MainActivity";
 //            }
 //        }
         Log.d("MainActivity", "getData: 进入getData");
-        final BmobQuery<Goods> goodsQuery = new BmobQuery<>();
+        BmobQuery<Goods> goodsQuery = new BmobQuery<>();
         boolean isCache = goodsQuery.hasCachedResult(Goods.class);
         if(isCache){
             goodsQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);   // 如果有缓存的话，则设置策略为CACHE_ELSE_NETWORK
@@ -235,7 +237,7 @@ private final String TAG ="MainActivity";
                     if(refreshLayout!=null){
                         refreshLayout.finishRefresh();
                     }else{
-                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT);
+                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
                     }
                 }
             }
@@ -320,21 +322,21 @@ private final String TAG ="MainActivity";
 
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void getAllGoods(){
-        BmobQuery<Goods> query = new BmobQuery<>();
-        for(int i=0;i<9;i++){
-            query.setLimit(100).setSkip(i*100).findObjects(new FindListener<Goods>() {
-                @Override
-                public void done(List<Goods> list, BmobException e) {
-                    Log.d(TAG, "getAllGoods: skip== "+JSON.toJSONString(list));
-                    if(e==null){
-                        allGoods.addAll(list);
-                    }
-                    else{
-                        Log.e(TAG, "done: ",e );
-                    }
+
+        new AsyncTask<Void, Void, Void> (){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                BmobQuery<Goods> query = new BmobQuery<>();
+                for(int i=0;i<9;i++){
+                    List<Goods> temp= query.setLimit(100).setSkip(i*100).findObjectsSync(Goods.class);
+                    allGoods.addAll(temp);
                 }
-            });
-        }
+                Log.d(TAG, "getAllGoods: "+allGoods.size());
+                return null;
+            }
+        }.execute();
+
     }
 }
