@@ -18,11 +18,15 @@ import com.example.liuyibo.goods.utils.network.MyRetrofit;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.exception.BmobException;
+import cn.bmob.v3.listener.SaveListener;
+import cn.bmob.v3.listener.UpdateListener;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
 public class AddNewActivity extends AppCompatActivity {
+    private Goods current = null;
     private final String TAG = "MainActivity ";
     @BindView(R.id.et_id)
     EditText etId;
@@ -53,14 +57,13 @@ public class AddNewActivity extends AppCompatActivity {
         if (json != null && !"".equals(json)) {
             flag = 1;
             Log.d(TAG, "json: " + json);
-            Goods goods = JSON.parseObject(json, Goods.class);
-            etName.setText(goods.getName());
-            etBz.setText(goods.getBz());
-            etCategory.setText(goods.getCategory());
-            etDw.setText(goods.getDw());
-            etPrice.setText(goods.getPrice());
-            etId.setText(goods.getIdnumber());
-            id = goods.getId();
+            current = JSON.parseObject(json, Goods.class);
+            etName.setText(current.getName());
+            etBz.setText(current.getBz());
+            etCategory.setText(current.getCategory());
+            etDw.setText(current.getDw());
+            etPrice.setText(current.getPrice());
+            etId.setText(current.getIdnumber());
         }
     }
 
@@ -70,82 +73,57 @@ public class AddNewActivity extends AppCompatActivity {
             case R.id.btn_sure:
                 btnSure.setEnabled(false);
                 if (flag == 1) {
-                    //todo delete
-                    Call<String> call = MyRetrofit.requestService.delete(id);
-                    call.enqueue(new Callback<String>() {
+                    current.setName(etName.getText().toString());
+                    current.setBz(etBz.getText().toString());
+                    current.setCategory(etCategory.getText().toString());
+                    current.setDw(etDw.getText().toString());
+                    current.setPrice(etPrice.getText().toString());
+                    current.setIdnumber(etId.getText().toString());
+                    Log.d(TAG, "onViewClicked: " + current.getBz() + current.getCategory() + current.getDw() + current.getName() + current.getPrice() + current.getIdnumber());
+                    current.update(current.getObjectId(),new UpdateListener() {
                         @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            Log.d(TAG, "onResponse: 删除原有东西成功");
-                            Goods goods = new Goods();
-                            goods.setName(etName.getText().toString());
-                            goods.setBz(etBz.getText().toString());
-                            goods.setCategory(etCategory.getText().toString());
-                            goods.setDw(etDw.getText().toString());
-                            goods.setPrice(etPrice.getText().toString());
-                            goods.setIdnumber(etId.getText().toString());
-                            Log.d(TAG, "onViewClicked: " + goods.getBz() + goods.getCategory() + goods.getDw() + goods.getName() + goods.getPrice() + goods.getId()+goods.getIdnumber());
-                            Call<String> call2 = MyRetrofit.requestService.addnew(goods);
-                            call2.enqueue(new Callback<String>() {
-                                @Override
-                                public void onResponse(Call<String> call, Response<String> response) {
-                                    Log.d(TAG, "onResponse: " + response.body());
-                                    if ("1".equals(response.body())) {
-                                        Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
-                                        AddNewActivity.this.finish();
-                                    } else {
-                                        Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<String> call, Throwable t) {
-                                    Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                        }
-
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) {
-
-                        }
-                    });
-                }else{
-                    Goods goods = new Goods();
-                    goods.setName(etName.getText().toString());
-                    goods.setBz(etBz.getText().toString());
-                    goods.setCategory(etCategory.getText().toString());
-                    goods.setDw(etDw.getText().toString());
-                    goods.setPrice(etPrice.getText().toString());
-                    goods.setIdnumber(etId.getText().toString());
-                    Log.d(TAG, "onViewClicked: " + goods.getBz() + goods.getCategory() + goods.getDw() + goods.getName() + goods.getPrice() + goods.getId()+goods.getIdnumber());
-                    Call<String> call2 = MyRetrofit.requestService.addnew(goods);
-                    call2.enqueue(new Callback<String>() {
-                        @Override
-                        public void onResponse(Call<String> call, Response<String> response) {
-                            Log.d(TAG, "onResponse: " + response.body());
-                            if ("1".equals(response.body())) {
-                                Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
+                        public void done(BmobException e) {
+                            if (e == null) {
+                                Toast.makeText(MyApplication.getContext(), "更新成功", Toast.LENGTH_LONG).show();
                                 AddNewActivity.this.finish();
                             } else {
-                                Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+                                Toast.makeText(MyApplication.getContext(), "更新失败", Toast.LENGTH_LONG).show();
                             }
                         }
-
-                        @Override
-                        public void onFailure(Call<String> call, Throwable t) {
-                            Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
-                        }
                     });
+    }else
+
+    {
+        Goods goods = new Goods();
+        goods.setName(etName.getText().toString());
+        goods.setBz(etBz.getText().toString());
+        goods.setCategory(etCategory.getText().toString());
+        goods.setDw(etDw.getText().toString());
+        goods.setPrice(etPrice.getText().toString());
+        goods.setIdnumber(etId.getText().toString());
+        Log.d(TAG, "onViewClicked: " + goods.getBz() + goods.getCategory() + goods.getDw() + goods.getName() + goods.getPrice() + goods.getIdnumber());
+        goods.save(new SaveListener<String>() {
+            @Override
+            public void done(String s, BmobException e) {
+                if (e == null) {
+                    Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
+                    AddNewActivity.this.finish();
+                } else {
+                    Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();
+
                 }
+            }
+        });
+    }
 
                 break;
             case R.id.btn_cancel:
-                etPrice.setText("");
+            etPrice.setText("");
                 etDw.setText("");
                 etCategory.setText("");
                 etBz.setText("");
                 etName.setText("");
                 break;
-        }
-    }
 }
+    }
+            }

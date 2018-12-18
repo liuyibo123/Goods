@@ -33,8 +33,18 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     private final String TAG = "GoodsAdapter";
     private List<Goods> goodsList;
     private static int viewHolderCount;
+    private int skip=1;
     private Goods current;
     private PopupMenuItemClickListener popupMenuItemClickListener;
+    private OnScrollEndListener scrollEndListener;
+
+    public void setScrollEndListener(OnScrollEndListener scrollEndListener) {
+        this.scrollEndListener = scrollEndListener;
+    }
+
+    public interface OnScrollEndListener{
+        void onscrollend(List<Goods> goodsList,int skip);
+    }
     public interface PopupMenuItemClickListener{
         public void click(int itemId,Goods current);
     }
@@ -43,6 +53,7 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
     }
     public GoodsAdapter(List<Goods> goodsList) {
         this.goodsList = goodsList;
+        this.skip=1;
         viewHolderCount = 0;
     }
 
@@ -70,6 +81,10 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder1.tvBz.setText("备注："+(goods.getBz()!=null?goods.getBz():""));
         holder1.tvID.setText("编号："+(goods.getIdnumber()!=null?goods.getIdnumber():""));
         holder1.itemView.setTag(position);
+        if(position==getItemCount()-1){
+            scrollEndListener.onscrollend(goodsList,skip);
+            skip++;
+        }
     }
 
     @Override

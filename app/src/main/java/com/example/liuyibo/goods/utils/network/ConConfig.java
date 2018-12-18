@@ -4,10 +4,10 @@ package com.example.liuyibo.goods.utils.network;
  */
 
 public class ConConfig {
-    public static String ipString = "47.94.231.212";
-    public static String portString = "8080";
+    public static String ipString = "api2.bmob.cn/1/classes";
+    public static String portString = "";
     public static String getUrl(){
-        return "http://"+ipString+":"+portString+"/";
+        return "https://api2.bmob.cn/1/classes/";
     }
 
     public static String getIpString() {

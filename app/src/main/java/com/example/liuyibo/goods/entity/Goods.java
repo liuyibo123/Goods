@@ -1,16 +1,10 @@
 package com.example.liuyibo.goods.entity;
 
-import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Id;
-import org.greenrobot.greendao.annotation.Generated;
 
-/**
- * Created by Administrator on 2017/10/24.
- */
-@Entity
-public class Goods {
-    @Id
-    private long id;
+import cn.bmob.v3.BmobObject;
+
+
+public class Goods  extends BmobObject {
     private String name;
     private String price;
     private String dw;
@@ -18,68 +12,54 @@ public class Goods {
     private String bz;
     private String imageUrl;
     private String idnumber;
-    @Generated(hash = 1744256925)
-    public Goods(long id, String name, String price, String dw, String category,
-            String bz, String imageUrl, String idnumber) {
-        this.id = id;
-        this.name = name;
-        this.price = price;
-        this.dw = dw;
-        this.category = category;
-        this.bz = bz;
-        this.imageUrl = imageUrl;
-        this.idnumber = idnumber;
-    }
-    @Generated(hash = 1770709345)
-    public Goods() {
-    }
-    public long getId() {
-        return this.id;
-    }
-    public void setId(long id) {
-        this.id = id;
-    }
     public String getName() {
         return this.name;
     }
-    public void setName(String name) {
+    public Goods setName(String name) {
         this.name = name;
+        return this;
     }
     public String getPrice() {
         return this.price;
     }
-    public void setPrice(String price) {
+    public Goods setPrice(String price) {
         this.price = price;
+        return this;
     }
     public String getDw() {
         return this.dw;
     }
-    public void setDw(String dw) {
+    public Goods setDw(String dw) {
         this.dw = dw;
+        return this;
     }
     public String getCategory() {
         return this.category;
     }
-    public void setCategory(String category) {
+    public Goods setCategory(String category) {
         this.category = category;
+        return this;
     }
     public String getBz() {
         return this.bz;
     }
-    public void setBz(String bz) {
+    public Goods setBz(String bz) {
         this.bz = bz;
+        return this;
     }
     public String getImageUrl() {
         return this.imageUrl;
     }
-    public void setImageUrl(String imageUrl) {
+    public Goods setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
+        return this;
     }
     public String getIdnumber() {
         return this.idnumber;
     }
-    public void setIdnumber(String idnumber) {
+    public Goods setIdnumber(String idnumber) {
         this.idnumber = idnumber;
+        return this;
     }
     
 }

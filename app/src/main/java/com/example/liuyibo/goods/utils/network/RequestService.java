@@ -14,6 +14,7 @@ import retrofit2.http.Body;
 import retrofit2.http.Field;
 import retrofit2.http.FormUrlEncoded;
 import retrofit2.http.GET;
+import retrofit2.http.Headers;
 import retrofit2.http.POST;
 import retrofit2.http.Query;
 
@@ -39,12 +40,17 @@ public interface RequestService {
 //    @FormUrlEncoded
 //    @POST("/api/mobile/credit_data/")
 //    Call<JSONArray> credit_data(@Field("p") String page);
-    @GET("/selectAll")
-    Call<List<Goods>> getAll();
+    @Headers({
+            "X-Bmob-Application-Id:e6da5c690aa1fff9b80bfe8d6ac361f3",
+            "X-Bmob-REST-API-Key:d86a3a54080ddde0e9d58a9e7e617782",
+            "Content-Type:application/json"})
+    @GET("Goods")
+    Call<String> getAll();
+
     @POST("/validate")
     Call<String> validate(@Query("username") String username, @Query("password") String password);
     @POST("/addnew")
     Call<String> addnew (@Body Goods goods);
     @GET("/delete")
-    Call<String> delete(@Query("id")long id);
+    Call<String> delete(@Query("id")String  id);
 }
