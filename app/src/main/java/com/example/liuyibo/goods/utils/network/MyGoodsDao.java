@@ -54,7 +54,12 @@ public class MyGoodsDao implements GoodsDao {
         if(goods!=null&&goods.size()>0){
             listener.done(goods);
         }else{
-            String goods = getFromFile();
+            String goods="";
+            try {
+               goods  = getFromFile();
+            }catch (Exception e){
+
+            }
             if (goods.length() > 0) {
                 List<Goods> goodsList= JSON.parseArray(goods, Goods.class);
                 MyGoodsDao.this.goods = goodsList;
@@ -82,7 +87,7 @@ public class MyGoodsDao implements GoodsDao {
     }
 
     private void getFromNetWork(final OnGetDoneListener listener) {
-        List<Goods> goods = (List<Goods>) new AsyncTask<Void, Void, List<Goods>>() {
+       new AsyncTask<Void, Void, List<Goods>>() {
             @Override
             protected List<Goods> doInBackground(Void... voids) {
                 List<Goods> list = new ArrayList<>();
@@ -91,6 +96,7 @@ public class MyGoodsDao implements GoodsDao {
                 int i=0;
                 Object temp = query.setLimit(100).setSkip(i*100).findObjectsSync(Goods.class);
                 while (temp!=null&&temp.toString().length()>10) {
+                    Log.d(TAG, "temp.size"+((List) temp).size());
                     list.addAll((Collection<? extends Goods>) temp);
                     i++;
                     temp=query.setLimit(100).setSkip(i*100).findObjectsSync(Goods.class);
@@ -101,7 +107,6 @@ public class MyGoodsDao implements GoodsDao {
             @Override
             protected void onPostExecute(List<Goods> goods) {
                 super.onPostExecute(goods);
-                Log.d(TAG, "onPostExecute: "+JSON.toJSONString(goods));
                 MyGoodsDao.this.writeIntoFile(JSON.toJSONString(goods));
                 MyGoodsDao.this.goods=goods;
                 listener.done(goods);
@@ -121,7 +126,7 @@ public class MyGoodsDao implements GoodsDao {
                 content.append(line);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Log.d(TAG, "getFromFile: "+e);
         } finally {
             if (reader != null) {
                 try {
@@ -142,7 +147,6 @@ public class MyGoodsDao implements GoodsDao {
             writer = new BufferedWriter(new OutputStreamWriter(out));
             writer.write(content);
         } catch (IOException e) {
-            e.printStackTrace();
         } finally {
             try {
                 if (writer != null) {

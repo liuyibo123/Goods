@@ -171,6 +171,7 @@ private final String TAG ="MainActivity";
             public boolean onQueryTextSubmit(final String s) {
                 if(goodsList.size()<600){
                     Toast.makeText(MyApplication.getContext(),"请稍后重试",Toast.LENGTH_SHORT).show();
+                    MainActivity.this.mainSwipe.autoRefresh();
                     return false;
                 }
                 dao.getAll(new MyGoodsDao.OnGetDoneListener() {
