@@ -13,17 +13,14 @@ import com.alibaba.fastjson.JSON;
 import com.example.liuyibo.goods.MyApplication;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.entity.Goods;
-import com.example.liuyibo.goods.utils.network.MyRetrofit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobPushManager;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.SaveListener;
 import cn.bmob.v3.listener.UpdateListener;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class AddNewActivity extends AppCompatActivity {
     private Goods current = null;
@@ -85,6 +82,7 @@ public class AddNewActivity extends AppCompatActivity {
                         public void done(BmobException e) {
                             if (e == null) {
                                 Toast.makeText(MyApplication.getContext(), "更新成功", Toast.LENGTH_LONG).show();
+                                new BmobPushManager().pushMessage("商品"+current.getName()+"有变动,请及时查看");
                                 AddNewActivity.this.finish();
                             } else {
                                 Toast.makeText(MyApplication.getContext(), "更新失败", Toast.LENGTH_LONG).show();
@@ -94,7 +92,7 @@ public class AddNewActivity extends AppCompatActivity {
     }else
 
     {
-        Goods goods = new Goods();
+        final Goods goods = new Goods();
         goods.setName(etName.getText().toString());
         goods.setBz(etBz.getText().toString());
         goods.setCategory(etCategory.getText().toString());
@@ -107,6 +105,8 @@ public class AddNewActivity extends AppCompatActivity {
             public void done(String s, BmobException e) {
                 if (e == null) {
                     Toast.makeText(MyApplication.getContext(), "保存成功", Toast.LENGTH_LONG).show();
+                    new BmobPushManager().pushMessage("新增商品"+goods.getName()+",请及时查看");
+
                     AddNewActivity.this.finish();
                 } else {
                     Toast.makeText(MyApplication.getContext(), "保存失败", Toast.LENGTH_LONG).show();

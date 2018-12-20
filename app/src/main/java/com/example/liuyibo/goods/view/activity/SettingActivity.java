@@ -9,7 +9,6 @@ import android.widget.EditText;
 import com.example.liuyibo.goods.R;
 import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
 import com.example.liuyibo.goods.utils.network.ConConfig;
-import com.example.liuyibo.goods.utils.network.MyRetrofit;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +44,7 @@ public class SettingActivity extends AppCompatActivity {
                 SharedPreferenceUtil.setString("conconfig","portString",portString);
                 ConConfig.setPortString(portString);
                 ConConfig.setIpString(ipString);
-                MyRetrofit.resetRetrofit();
+//                MyRetrofit.resetRetrofit();
                 this.finish();
                 break;
             case R.id.btn_cancel:

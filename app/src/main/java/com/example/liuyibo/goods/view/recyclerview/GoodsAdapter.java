@@ -82,8 +82,11 @@ public class GoodsAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> 
         holder1.tvID.setText("编号："+(goods.getIdnumber()!=null?goods.getIdnumber():""));
         holder1.itemView.setTag(position);
         if(position==getItemCount()-1){
-            scrollEndListener.onscrollend(goodsList,skip);
-            skip++;
+            if(scrollEndListener!=null){
+                scrollEndListener.onscrollend(goodsList,skip);
+                skip++;
+            }
+
         }
     }
 

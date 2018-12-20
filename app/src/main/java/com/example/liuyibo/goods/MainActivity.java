@@ -1,6 +1,7 @@
 package com.example.liuyibo.goods;
 
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -8,7 +9,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,13 +19,15 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 
 import com.example.liuyibo.goods.entity.Goods;
 import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
-import com.example.liuyibo.goods.utils.network.MyRetrofit;
+import com.example.liuyibo.goods.utils.network.GoodsDao;
+import com.example.liuyibo.goods.utils.network.MyGoodsDao;
 import com.example.liuyibo.goods.view.activity.AddNewActivity;
 import com.example.liuyibo.goods.view.activity.LoginActivity;
 import com.example.liuyibo.goods.view.activity.SettingActivity;
@@ -36,23 +38,18 @@ import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.listener.OnRefreshListener;
 
-import java.security.Permission;
 import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.bmob.v3.BmobPushManager;
 import cn.bmob.v3.BmobQuery;
-import cn.bmob.v3.datatype.BmobQueryResult;
 import cn.bmob.v3.exception.BmobException;
 import cn.bmob.v3.listener.FindListener;
 
-import cn.bmob.v3.listener.SQLQueryListener;
 import cn.bmob.v3.listener.UpdateListener;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -60,11 +57,11 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recycler;
     @BindView(R.id.main_swipe)
     SmartRefreshLayout mainSwipe;
-    private List<Goods> goodsList = null;
+    private List<Goods> goodsList = new ArrayList<>();
     @BindView(R.id.add)
     FloatingActionButton add;
     FloatingActionMenu menuLabelsRight;
-    private List<Goods> allGoods=new ArrayList<>();
+    private GoodsDao dao = MyGoodsDao.getInstance();
 private final String TAG ="MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -78,12 +75,11 @@ private final String TAG ="MainActivity";
     @Override
     protected void onResume() {
         super.onResume();
-        allGoods.clear();
+        goodsList.clear();
         getData(null);
         if(Config.getAdminFlag()==Config.isAdmin){
             menuLabelsRight.showMenu(true);
         }
-        getAllGoods();
     }
 
     private void init() {
@@ -166,25 +162,36 @@ private final String TAG ="MainActivity";
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.setting, menu);
         MenuItem menuItem = menu.findItem(R.id.search);//在菜单中找到对应控件的item
-        final SearchView search = (SearchView) MenuItemCompat.getActionView(menuItem);
+        SearchView search = (SearchView) menuItem.getActionView();
 
         Log.d("Tag", "menu create");
         search.setSubmitButtonEnabled(true);
         search.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public boolean onQueryTextSubmit(String s) {
-                List<Goods> searchList = new ArrayList<>();
-                for(Goods goods:allGoods){
-                    if(goods.getName().contains(s)){
-                        searchList.add(goods);
-                    }
-                    if(goods.getBz().contains(s)||goods.getCategory().contains(s)){
-                        searchList.add(goods);
-                    }
+            public boolean onQueryTextSubmit(final String s) {
+                if(goodsList.size()<600){
+                    Toast.makeText(MyApplication.getContext(),"请稍后重试",Toast.LENGTH_SHORT).show();
+                    return false;
                 }
-                Log.d(TAG, "onQueryTextSubmit: "+JSON.toJSONString(searchList));
-                initRecyclerView(searchList);
+                dao.getAll(new MyGoodsDao.OnGetDoneListener() {
+                    @Override
+                    public void done(List<Goods> goods) {
+                        goodsList=goods;
+                        List<Goods> searchList = new ArrayList<>();
+                        for(Goods goods1:goodsList){
+                            if(goods1.getName().contains(s)){
+                                searchList.add(goods1);
+                                continue;
+                            }
+                            if(goods1.getBz().contains(s)||goods1.getCategory().contains(s)){
+                                searchList.add(goods1);
+                            }
+                        }
+                        initRecyclerView(searchList,true);
+                    }
+                });
                 return false;
+
             }
 
             @Override
@@ -220,29 +227,25 @@ private final String TAG ="MainActivity";
 //            }
 //        }
         Log.d("MainActivity", "getData: 进入getData");
-        BmobQuery<Goods> goodsQuery = new BmobQuery<>();
-        boolean isCache = goodsQuery.hasCachedResult(Goods.class);
-        if(isCache){
-            goodsQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);   // 如果有缓存的话，则设置策略为CACHE_ELSE_NETWORK
-        }else{
-            goodsQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);   // 如果没有缓存的话，则设置策略为NETWORK_ELSE_CACHE
-        }
-        goodsQuery.setLimit(100).findObjects(new FindListener<Goods>() {
+        final ProgressDialog pd1 = new ProgressDialog(this);
+        pd1.setTitle("正在更新数据");
+        pd1.setIcon(R.mipmap.ic_launcher);
+        pd1.setMessage("数据更新中......");
+        pd1.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        pd1.setCancelable(true);
+        pd1.setIndeterminate(true);
+        pd1.show();
+        dao.getAll(new MyGoodsDao.OnGetDoneListener(){
             @Override
-            public void done(List<Goods> list, BmobException e) {
-                if(e==null){
-                    goodsList =list ;
-                    Log.d(TAG, "done: "+JSON.toJSONString(goodsList));
-                    initRecyclerView(goodsList);
-                    if(refreshLayout!=null){
-                        refreshLayout.finishRefresh();
-                    }else{
-                        Toast.makeText(MyApplication.getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
+            public void done(List<Goods> goods) {
+                goodsList =goods ;
+                initRecyclerView(goodsList,false);
+                if(refreshLayout!=null){
+                    refreshLayout.finishRefresh();
                 }
+                pd1.hide();
             }
         });
-
 //        Call<String> call = MyRetrofit.requestService.getAll();
 //        call.enqueue(new Callback<String>() {
 //            @Override
@@ -263,35 +266,38 @@ private final String TAG ="MainActivity";
 
     }
 
-    private void initRecyclerView(List<Goods> goodsList1) {
+    private void initRecyclerView(List<Goods> goodsList1,boolean isSearch) {
         final GoodsAdapter adapter = new GoodsAdapter(goodsList1);
-        adapter.setScrollEndListener(new GoodsAdapter.OnScrollEndListener() {
-            @Override
-            public void onscrollend(List<Goods> goods, int skip) {
-                final BmobQuery<Goods> goodsQuery = new BmobQuery<>();
-                boolean isCache = goodsQuery.hasCachedResult(Goods.class);
-                if(isCache){
-                    goodsQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);   // 如果有缓存的话，则设置策略为CACHE_ELSE_NETWORK
-                }else{
-                    goodsQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);   // 如果没有缓存的话，则设置策略为NETWORK_ELSE_CACHE
-                }
-                goodsQuery.setLimit(100).setSkip(skip*100).findObjects(new FindListener<Goods>() {
-                    @Override
-                    public void done(List<Goods> list, BmobException e) {
-                        if(e==null){
-                            goodsList.addAll(list);
-                            adapter.notifyDataSetChanged();
-                        }else{
-                            Toast.makeText(MyApplication.getContext(),"查询失败",Toast.LENGTH_LONG).show();
-                        }
-                    }
-                });
-            }
-        });
+//        if(!isSearch){
+//            adapter.setScrollEndListener(new GoodsAdapter.OnScrollEndListener() {
+//                @Override
+//                public void onscrollend(List<Goods> goods, int skip) {
+//                    final BmobQuery<Goods> goodsQuery = new BmobQuery<>();
+//                    boolean isCache = goodsQuery.hasCachedResult(Goods.class);
+//                    if(isCache){
+//                        goodsQuery.setCachePolicy(BmobQuery.CachePolicy.CACHE_ELSE_NETWORK);   // 如果有缓存的话，则设置策略为CACHE_ELSE_NETWORK
+//                    }else{
+//                        goodsQuery.setCachePolicy(BmobQuery.CachePolicy.NETWORK_ELSE_CACHE);   // 如果没有缓存的话，则设置策略为NETWORK_ELSE_CACHE
+//                    }
+//                    goodsQuery.setLimit(100).setSkip(skip*100).findObjects(new FindListener<Goods>() {
+//                        @Override
+//                        public void done(List<Goods> list, BmobException e) {
+//                            if(e==null){
+//                                goodsList.addAll(list);
+//                                adapter.notifyDataSetChanged();
+//                            }else{
+//                                Toast.makeText(MyApplication.getContext(),"查询失败",Toast.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    });
+//                }
+//            });
+//        }
+
         if(Config.getAdminFlag()==Config.isAdmin){
             adapter.setOnPopupmenuItemClickListener(new GoodsAdapter.PopupMenuItemClickListener() {
                 @Override
-                public void click(int itemId, Goods current) {
+                public void click(int itemId, final Goods current) {
                     switch (itemId) {
                         case Menu.FIRST + 0:
                             Intent i = new Intent(MainActivity.this, AddNewActivity.class);
@@ -305,6 +311,8 @@ private final String TAG ="MainActivity";
                                 public void done(BmobException e) {
                                     if (e == null) {
                                         Toast.makeText(MyApplication.getContext(), "删除成功", Toast.LENGTH_LONG).show();
+                                        new BmobPushManager().pushMessage("商品"+current.getName()+"被删除,请及时查看");
+
                                         MainActivity.this.onResume();
                                     } else {
                                         Toast.makeText(MyApplication.getContext(), "删除失败", Toast.LENGTH_LONG).show();
@@ -322,21 +330,4 @@ private final String TAG ="MainActivity";
 
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void getAllGoods(){
-
-        new AsyncTask<Void, Void, Void> (){
-            @Override
-            protected Void doInBackground(Void... voids) {
-                BmobQuery<Goods> query = new BmobQuery<>();
-                for(int i=0;i<9;i++){
-                    List<Goods> temp= query.setLimit(100).setSkip(i*100).findObjectsSync(Goods.class);
-                    allGoods.addAll(temp);
-                }
-                Log.d(TAG, "getAllGoods: "+allGoods.size());
-                return null;
-            }
-        }.execute();
-
-    }
 }

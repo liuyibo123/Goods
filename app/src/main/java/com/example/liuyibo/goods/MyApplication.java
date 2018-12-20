@@ -8,8 +8,13 @@ import com.example.liuyibo.goods.utils.SharedPreferenceUtil;
 import com.example.liuyibo.goods.utils.network.ConConfig;
 
 
+import cn.bmob.push.BmobPush;
 import cn.bmob.v3.Bmob;
+import cn.bmob.v3.BmobInstallation;
+import cn.bmob.v3.BmobInstallationManager;
 import cn.bmob.v3.BmobQuery;
+import cn.bmob.v3.InstallationListener;
+import cn.bmob.v3.exception.BmobException;
 
 public class MyApplication extends Application {
     private static Context context;
@@ -25,14 +30,17 @@ public class MyApplication extends Application {
             SharedPreferenceUtil.setString("admin","adminFlag","2");
         }
         Config.setAdminFlag(Integer.parseInt(SharedPreferenceUtil.getString("admin","adminFlag")));
-//        String ipString = SharedPreferenceUtil.getString("conconfig","ipString");
-//        String portString = SharedPreferenceUtil.getString("conconfig","portString");
-//        if(!"".equals(ipString)&&!"".equals(portString)){
-//            ConConfig.setIpString(ipString);
-//            ConConfig.setPortString(portString);
-//        }
+        BmobInstallationManager.getInstance().initialize(new InstallationListener<BmobInstallation>() {
+            @Override
+            public void done(BmobInstallation bmobInstallation, BmobException e) {
+                if (e == null) {
+                } else {
 
-
+                }
+            }
+        });
+// 启动推送服务
+        BmobPush.startWork(this);
 
     }
     public static Context getContext() {
